@@ -11,7 +11,13 @@ DEST="$ROOT/natives/src/main/resources/natives/windows-x64"
 VERSION=5.48
 
 cd "$SRC"
-./configure --prefix="$PREFIX" --enable-shared --disable-static --disable-libseccomp
+# file 5.48 assumes timespec.tv_sec and time_t are the same type. MinGW64 makes
+# the former long and the latter long long; convert the value before passing it.
+if ! grep -q 'time_t seconds = (time_t)ts.tv_sec' src/readcdf.c; then
+  patch -p1 < "$ROOT/build-natives/patches/file-5.48-mingw-time_t.patch"
+fi
+./configure --prefix="$PREFIX" --enable-shared --disable-static \
+  --disable-zstdlib --disable-libseccomp
 make -j"$(nproc)"
 make install
 
@@ -45,10 +51,11 @@ done
 
 cp "$SRC/COPYING" "$DEST/COPYING.libmagic"
 {
-  echo "file/libmagic $VERSION (windows-x64), built from unmodified source with MSYS2 mingw-w64"
+  echo "file/libmagic $VERSION (windows-x64), built from source with MSYS2 mingw-w64"
   echo "Source: https://www.astron.com/pub/file/file-$VERSION.tar.gz"
   echo "License: BSD-2-Clause (see COPYING.libmagic)"
-  echo "configure: --enable-shared --disable-static --disable-libseccomp"
+  echo "Local patch: file-5.48-mingw-time_t.patch (safe timespec.tv_sec to time_t conversion)"
+  echo "configure: --enable-shared --disable-static --disable-zstdlib --disable-libseccomp"
 } > "$DEST/BUILD-INFO.txt"
 
 echo "Staged $(ls "$DEST" | wc -l) files into $DEST"

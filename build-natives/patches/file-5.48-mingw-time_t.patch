@@ -1,0 +1,13 @@
+--- a/src/readcdf.c
++++ b/src/readcdf.c
+@@ -241,7 +241,9 @@ cdf_file_property_info(struct magic_set *ms, const cdf_property_info_t *info,
+ 				} else {
+ 					char *c, *ec;
+ 					cdf_timestamp_to_timespec(&ts, tp);
+-					c = cdf_ctime(&ts.tv_sec, tbuf);
++					/* MinGW uses 64-bit time_t but timespec.tv_sec is long. */
++					time_t seconds = (time_t)ts.tv_sec;
++					c = cdf_ctime(&seconds, tbuf);
+ 					if (c != NULL &&
+ 					    (ec = strchr(c, '\n')) != NULL)
+ 						*ec = '\0';

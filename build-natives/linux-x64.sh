@@ -11,7 +11,8 @@ DEST="$ROOT/natives/src/main/resources/natives/linux-x64"
 VERSION=5.48
 
 cd "$SRC"
-./configure --prefix="$PREFIX" --enable-shared --disable-static --disable-libseccomp
+./configure --prefix="$PREFIX" --enable-shared --disable-static \
+  --disable-zstdlib --disable-libseccomp
 make -j"$(nproc)"
 make install
 
@@ -37,7 +38,7 @@ cp "$SRC/COPYING" "$DEST/COPYING.libmagic"
   echo "file/libmagic $VERSION (linux-x64), built from unmodified source"
   echo "Source: https://www.astron.com/pub/file/file-$VERSION.tar.gz"
   echo "License: BSD-2-Clause (see COPYING.libmagic)"
-  echo "configure: --enable-shared --disable-static --disable-libseccomp"
+  echo "configure: --enable-shared --disable-static --disable-zstdlib --disable-libseccomp"
 } > "$DEST/BUILD-INFO.txt"
 
 echo "Staged $(ls "$DEST" | wc -l | tr -d ' ') files into $DEST"

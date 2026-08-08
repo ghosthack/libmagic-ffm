@@ -10,7 +10,7 @@ DEST="$ROOT/natives/src/main/resources/natives/macos-arm64"
 VERSION=5.48
 
 cd "$SRC"
-./configure --prefix="$PREFIX" --enable-shared --disable-static
+./configure --prefix="$PREFIX" --enable-shared --disable-static --disable-zstdlib
 make -j"$(sysctl -n hw.ncpu)"
 make install
 
@@ -37,7 +37,7 @@ cp "$SRC/COPYING" "$DEST/COPYING.libmagic"
   echo "file/libmagic $VERSION (macos-arm64), built from unmodified source"
   echo "Source: https://www.astron.com/pub/file/file-$VERSION.tar.gz"
   echo "License: BSD-2-Clause (see COPYING.libmagic)"
-  echo "configure: --enable-shared --disable-static"
+  echo "configure: --enable-shared --disable-static --disable-zstdlib"
 } > "$DEST/BUILD-INFO.txt"
 
 echo "Staged $(ls "$DEST" | wc -l | tr -d ' ') files into $DEST"
