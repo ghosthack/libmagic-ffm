@@ -19,6 +19,12 @@
       <url>https://opensource.org/license/bsd-2-clause</url>
       <distribution>repo</distribution>
     </license>
+    <license>
+      <name>GNU Lesser General Public License v2.1 or later</name>
+      <url>https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</url>
+      <distribution>repo</distribution>
+      <comments>Applies to the libintl and libiconv support DLLs in the Windows classifier.</comments>
+    </license>
   </licenses>
 
   <build>

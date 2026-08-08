@@ -7,7 +7,7 @@ coordinate, batteries included: no JNI and no user-installed libmagic.
 | Artifact | Contents | License |
 |---|---|---|
 | `io.github.ghosthack:libmagic-ffm` | All public functions and API constants, native loader, and Java-friendly `Magic` wrapper | MIT |
-| `io.github.ghosthack:libmagic-ffm-natives` (`macos-arm64`, `windows-x64`, `linux-x64`) | file/libmagic 5.48 shared library and `magic.mgc` | BSD-2-Clause |
+| `io.github.ghosthack:libmagic-ffm-natives` (`macos-arm64`, `windows-x64`, `linux-x64`) | file/libmagic 5.48 shared library and `magic.mgc` | BSD-2-Clause; Windows support DLLs also BSD/LGPL-2.1+ |
 
 Status: initial `5.48-0.1.0-SNAPSHOT` implementation. Supported platforms are
 macOS ARM64, Windows x64, and Linux x64.

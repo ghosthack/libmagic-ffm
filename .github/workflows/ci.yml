@@ -68,6 +68,10 @@ jobs:
             mingw-w64-x86_64-zlib
             mingw-w64-x86_64-bzip2
             mingw-w64-x86_64-xz
+            mingw-w64-x86_64-libsystre
+            mingw-w64-x86_64-libtre
+            mingw-w64-x86_64-gettext-runtime
+            mingw-w64-x86_64-libiconv
             make
             patch
             curl

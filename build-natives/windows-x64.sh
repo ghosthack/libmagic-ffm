@@ -26,7 +26,8 @@ mkdir -p "$DEST"
 : > "$DEST/manifest.txt"
 
 # Dependencies must be loaded before libmagic.
-for runtime in libwinpthread-1.dll libgcc_s_seh-1.dll zlib1.dll liblzma-5.dll libbz2-1.dll; do
+for runtime in libwinpthread-1.dll libgcc_s_seh-1.dll libiconv-2.dll \
+    libintl-8.dll libtre-5.dll libsystre-0.dll zlib1.dll liblzma-5.dll libbz2-1.dll; do
   if [ -f "/mingw64/bin/$runtime" ]; then
     cp "/mingw64/bin/$runtime" "$DEST/$runtime"
     echo "$runtime" >> "$DEST/manifest.txt"
@@ -42,7 +43,7 @@ echo "$NAME" >> "$DEST/manifest.txt"
 cp "$PREFIX/share/misc/magic.mgc" "$DEST/magic.mgc"
 echo "magic.mgc" > "$DEST/resources.txt"
 
-ALLOWED='magic|libwinpthread|libgcc_s_seh|zlib1|liblzma|libbz2|KERNEL32|USER32|ADVAPI32|SHELL32|ole32|OLEAUT32|SHLWAPI|bcrypt|msvcrt|ntdll|api-ms-'
+ALLOWED='magic|libwinpthread|libgcc_s_seh|libiconv|libintl|libtre|libsystre|zlib1|liblzma|libbz2|KERNEL32|USER32|ADVAPI32|SHELL32|ole32|OLEAUT32|SHLWAPI|bcrypt|msvcrt|ntdll|api-ms-'
 for file in "$DEST"/*.dll; do
   if objdump -p "$file" | awk '/DLL Name:/{print $3}' | grep -viE "^($ALLOWED)"; then
     echo "ERROR: $file imports unexpected DLLs (above)"; exit 1
@@ -50,11 +51,17 @@ for file in "$DEST"/*.dll; do
 done
 
 cp "$SRC/COPYING" "$DEST/COPYING.libmagic"
+cp /mingw64/share/licenses/libsystre/LICENSE "$DEST/LICENSE.libsystre"
+cp /mingw64/share/licenses/libtre/LICENSE "$DEST/LICENSE.libtre"
+cp /mingw64/share/licenses/gettext-runtime/intl/COPYING.LIB "$DEST/COPYING.LIB.gettext"
+cp /mingw64/share/licenses/libiconv/COPYING.LIB "$DEST/COPYING.LIB.libiconv"
 {
   echo "file/libmagic $VERSION (windows-x64), built from source with MSYS2 mingw-w64"
   echo "Source: https://www.astron.com/pub/file/file-$VERSION.tar.gz"
   echo "License: BSD-2-Clause (see COPYING.libmagic)"
   echo "Local patch: file-5.48-mingw-time_t.patch (safe timespec.tv_sec to time_t conversion)"
+  echo "Runtime support: libsystre 1.0.2 (BSD-2), libtre 0.9.0 (BSD),"
+  echo "  gettext-runtime/libintl and libiconv (LGPL-2.1+); see bundled license files"
   echo "configure: --enable-shared --disable-static --disable-zstdlib --disable-libseccomp"
 } > "$DEST/BUILD-INFO.txt"
 
