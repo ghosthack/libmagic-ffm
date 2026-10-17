@@ -135,12 +135,18 @@ jobs:
           fi
           # skipPublishing would also skip bundling, so let the upload fail
           # against an unreachable URL instead and keep the bundle it built.
-          ./mvnw -B clean deploy -P release,all-natives -Dnative.classifier=macos-arm64 -DskipTests -DcentralBaseUrl=http://127.0.0.1:9 || true
+          SIGN_ARGS=()
+          if [[ "$HAS_GPG_KEY" != true ]]; then
+            echo "::warning::GPG_PRIVATE_KEY is not set; building an unsigned bundle"
+            SIGN_ARGS=(-Dgpg.skip=true)
+          fi
+          ./mvnw -B clean deploy -P release,all-natives -Dnative.classifier=macos-arm64 -DskipTests -DcentralBaseUrl=http://127.0.0.1:9 "${SIGN_ARGS[@]}" || true
           test -f target/central-publishing/central-bundle.zip
           unzip -Z -v target/central-publishing/central-bundle.zip | grep -E '^(Central directory entry|  file system or operating system of origin|  version of encoding software|  minimum software version|  general purpose bit flag|  compression method|  file name|There is)' || true
           unzip -l target/central-publishing/central-bundle.zip
         env:
           DRY_RUN_VERSION: ${{ inputs.version }}
+          HAS_GPG_KEY: ${{ secrets.GPG_PRIVATE_KEY != '' }}
           MAVEN_CENTRAL_USERNAME: dry-run
           MAVEN_CENTRAL_PASSWORD: dry-run
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
