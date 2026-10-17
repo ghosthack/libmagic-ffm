@@ -130,9 +130,17 @@ jobs:
       - name: Build Central bundle without publishing
         run: |
           ./mvnw -v
-          if [[ -n "$DRY_RUN_VERSION" ]]; then
-            ./mvnw -B -q versions:set -DnewVersion="$DRY_RUN_VERSION" -DgenerateBackupPoms=false
+          # Snapshot versions deploy straight to Central's snapshot repository
+          # instead of building a bundle, so always build a release version.
+          if [[ -z "$DRY_RUN_VERSION" ]]; then
+            DRY_RUN_VERSION="$(./mvnw -q -N help:evaluate -Dexpression=project.version -DforceStdout)"
+            DRY_RUN_VERSION="${DRY_RUN_VERSION%-SNAPSHOT}"
           fi
+          if [[ "$DRY_RUN_VERSION" == *-SNAPSHOT ]]; then
+            echo "::error::Dry run version must not be a snapshot: $DRY_RUN_VERSION"
+            exit 1
+          fi
+          ./mvnw -B -q versions:set -DnewVersion="$DRY_RUN_VERSION" -DgenerateBackupPoms=false
           # skipPublishing would also skip bundling, so let the upload fail
           # against an unreachable URL instead and keep the bundle it built.
           SIGN_ARGS=()
